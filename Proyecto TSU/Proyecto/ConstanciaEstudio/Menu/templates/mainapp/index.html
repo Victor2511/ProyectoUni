@@ -1,0 +1,28 @@
+{% extends 'layouts/layout.html' %}
+<!--Con Django permite heredar la plantilla principal-->
+
+{% block title %} {{title}} {% endblock %}
+
+
+
+{% block content %}
+    <h1>{{title}}</h1>
+    <hr/>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-sucesss">
+                {{message}}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <!--Esto saluda al usuario al momento de iniciar sesion-->
+    {% if user.email %}
+        <h2>Bienvenido , {{request.user.first_name}} {{user.last_name}}</h2>
+        <p>
+            {{user.email}}
+        </p>
+    <!--En caso contrario saldra este mensaje-->
+    {% else %}
+        <h2>Identificate para ver mas cosas</h2>
+    {%  endif  %}
+{% endblock %}

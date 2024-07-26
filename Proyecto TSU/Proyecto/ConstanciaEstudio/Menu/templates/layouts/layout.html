@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--La layout es la plantilla principal para todas las demas paginas-->
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %} {% endblock %}</title>
+    <!--Aqui se invoca el CSS-->
+    {% load static %}
+    <link
+      rel="stylesheet"href="{% static 'css/visual.css' %}"/>
+  </head>
+  
+  <body>
+    <!--Cabecera de la Pagina-->
+    <header>
+      <div class="logo">
+      <img src="{% static 'css/images/Logo_Unexca.jpg' %}" />
+    </div>
+    
+    <nav>
+      <ul>
+        <li>
+          <a href="{% url 'index' %}" class="nav link">Inicio</a>
+        </li>
+        <!--Las condicionales permiten mostrar las opciones disponibles
+            si el usuario esta o no esta identificado-->
+        {% if user.email %}
+        <li>
+          <a href="{% url 'logout' %}" class="nav link">Cerrar sesion</a>
+        </li>
+        <li>
+          <a href="{% url 'solicitud' %}"class="nav link">Solicitud</a>
+        </li>
+        
+        <!--En caso de que no este autenticado no puede ver la opcion de solicitud de constancia-->
+        {% else %}
+        <li>
+          <a href="{% url 'register' %}"class="nav link">Registro</a>
+        </li>
+        
+        <li>
+          <a href="{% url 'login' %}"class="nav link">Login</a>
+        </li>
+        {% endif %}
+      </ul>
+    </header>
+<div id="body">
+  </nav>
+    <div class="barra">
+      <span class="esquina-izquierda"></span>
+      <span class="relleno-barra"></span>
+      <span class="esquina-derecha"></span>
+    </div>
+    
+    <div id="content">
+      <div class="box">
+        {% block content %}
+        <!--Codigo que viene de templates-->
+        <strong>Contenido del bloque original!!!</strong>
+        {% endblock %}
+      </div>
+    </div>
+    
+    <!--el Footer-->
+    
+    <footer class="fotter">
+      <ul class="social-icon">
+      
+  <li class="icon-elem">
+          <a href="https://www.instagram.com/unexca_ve/?hl=es" class="icon">
+            <ion-icon name="logo-instagram"></ion-icon>
+          </a>
+        </li>
+        <li class="icon-elem">
+          <a href="https://www.facebook.com/groups/13128247257/?locale=es_LA" class="icon">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </a>
+        </li>
+        <li class="icon-elem">
+          <a href="https://x.com/UNEXCA_ve" class="icon">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </a>
+        </li>
+      </ul>
+      <ul class="menu">
+        <li class="menu-elem">
+          <a href="http://127.0.0.1:8000/"class="menu-icon"> Direccion:Esquina Mijares Con Calle Norte 3, Carmelitas
+            Parroquia: Altagracia
+            Municipio: Libertador
+            Estado: Distrito Capital
+            Venezuela</a>
+        </li>
+      </ul>    
+      <li class="menu-elem">
+        <a href=""class="menu-icon">Telefono:(0212) 860.43.49</a>
+      </li>
+    </ul>    
+    <li class="menu-elem">
+      <a href="https://cufm.terna.net/Noticias.php?news_tag=PNF"class="menu-icon">PNF</a>
+    </li>
+      </ul> 
+  <p class="text"> Proyecto UNEXCA |2024 </p>
+    
+    
+    
+    
+    </footer>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
+
+
+

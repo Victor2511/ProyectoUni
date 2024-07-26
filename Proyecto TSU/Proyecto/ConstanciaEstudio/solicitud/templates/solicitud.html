@@ -1,0 +1,27 @@
+{% extends 'layouts/layout.html' %}
+
+
+{% block title %} {{title}} {% endblock %}
+
+
+
+{% block content %}
+    <h1>{{Solicitud}}</h1>
+    
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ solicitud_form }}
+    
+    
+    
+    
+        <!----
+        {% for field in solicitud_form %}
+            <label>{{field.label}}</label>
+            {{field}}
+        {% endfor %}
+        ------>
+        <input type="submit" value="Enviar" />
+    </form>
+
+{% endblock %}
