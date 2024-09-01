@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import SolicitudForm
+from Menu.models import student_registration
 
 # Aqui hacemos que funcione el formulario y se envie la informacion correctamente
 
 @login_required
-def solicitud(request):
+def solicitar_constancia(request):
     solicitud_form = SolicitudForm()
     
     if request.method == "POST":
@@ -14,11 +15,17 @@ def solicitud(request):
         
         if solicitud_form.is_valid():
             solicitud = solicitud_form.save(commit=False)
-            solicitud.user = request.user
+            
+            try:
+                estudiante = student_registration.objects.get(correo=request.user.email)
+            except student_registration.DoesNotExist:
+                messages.error(request, 'No se encontro el registro del estudiante en la base de datos.')
+                return redirect('inicio')
+            
+            solicitud.estudiante = estudiante
             solicitud.save()
             messages.success(request, 'Tu solicitud ha sido un exito')
             return redirect('inicio')
-        
         
         
         
@@ -26,3 +33,4 @@ def solicitud(request):
         'title': 'Solicitud',
         'solicitud_form': solicitud_form
     })
+    

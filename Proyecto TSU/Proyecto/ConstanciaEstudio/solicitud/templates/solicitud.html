@@ -6,21 +6,15 @@
 
 
 {% block content %}
-    <h1>{{Solicitud}}</h1>
+    <h1>Solicitud de Constancia de Estudios</h1>
     
     <form method="POST" action="">
         {% csrf_token %}
-        {{ solicitud_form }}
-    
-    
-    
-    
-        <!----
-        {% for field in solicitud_form %}
-            <label>{{field.label}}</label>
-            {{field}}
-        {% endfor %}
-        ------>
+        <div class="form-group">
+            {{ solicitud_form.primera_solicitud.label_tag }}
+            {{ solicitud_form.primera_solicitud }}
+        </div>
+        
         <input type="submit" value="Enviar" />
     </form>
 
