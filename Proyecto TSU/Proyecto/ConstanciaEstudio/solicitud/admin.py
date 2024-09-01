@@ -9,6 +9,9 @@ from reportlab.lib.utils import ImageReader
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
 
+""" Actualizacion: para el panel de administracion creamos una clase que permite ordenar y obtener los datos de
+student_registration anteriormente referenciados, pero para no complicarnos en como apareceran los nombres
+creamos unas funciones personalizadas que sirven tanto para asignar nombres cortos y tener un modo de filtrar por datos """
 
 class ConstanciaAdmin(admin.ModelAdmin):
     list_display = ('get_nombre', 'get_apellido', 'get_cedula', 'get_email', 'get_fecha_solicitud', 'estado', 'primera_solicitud')
@@ -20,7 +23,7 @@ class ConstanciaAdmin(admin.ModelAdmin):
             return obj.estudiante.p_nombre
         except AttributeError:
             return "Nombre no disponible"
-    get_nombre.short_description = 'Nombre'
+    get_nombre.short_description = 'Nombre' # short_description sirve para agregar un nombre corto y personalizado y no se vea tal cual como el campo.
     
     
     def get_apellido(self, obj):
@@ -37,7 +40,7 @@ class ConstanciaAdmin(admin.ModelAdmin):
         except AttributeError:
             return "Cedula no disponible"
     get_cedula.short_description = 'Cedula'
-    get_cedula.admin_order_field = 'estudiante__cedula'
+    get_cedula.admin_order_field = 'estudiante__cedula' # admin_order_field sirve para filtrar
     
     
     def get_email(self, obj):
@@ -140,7 +143,7 @@ class ConstanciaAdmin(admin.ModelAdmin):
             'Constancia de Estudio solicitada',
             f'Hola {primer_nombre} {primer_apellido}, tu solicitud de constancia de estudio ha sido exitosa. '
             'Por favor revisa el archivo adjunto para obtener tu constancia de estudio.',
-            'victorgabrieljunior@gmail.com',
+            #'(Agregar correo electronico)',
             [correo]
         )
         email.attach(f'constancia_{primer_nombre}_{primer_apellido}.pdf', response.getvalue(), 'application/pdf')
@@ -148,8 +151,8 @@ class ConstanciaAdmin(admin.ModelAdmin):
         
         self.message_user(request, "Constancia generada y enviada por correo exitosamente.")
         
-        # Esta procesando muy lento generar y enviar por correo la constancia y el mensaje retorna al
-        # reiniciar la pagina. Tomar en cuenta
+        """ Esta procesando muy lento generar y enviar por correo la constancia y el mensaje retorna al
+        reiniciar la pagina. Tomar en cuenta. """
         
         return response
     
