@@ -94,7 +94,7 @@ class student_registration(models.Model):
         send_mail(
             'Informacion de Acceso',
             f'Hola {self.p_nombre},\n\nTu cuenta ha sido creada exitosamente. \n\nUsuario: {username}\nPassword: {password}',
-            'victorgabrieljunior@gmail.com', # Recuerda que debes poner tu correo electronico aqui para enviar la informacion.
+            '(agrega el correo electronico)', # Recuerda que debes poner tu correo electronico aqui para enviar la informacion.
             [self.correo],
             fail_silently=False,
         ) """
