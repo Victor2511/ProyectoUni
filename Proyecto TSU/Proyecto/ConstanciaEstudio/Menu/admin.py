@@ -56,7 +56,7 @@ class RecuperacionUsuarioAdmin(admin.ModelAdmin):
                 send_mail(
                     'Recuperacion de Usuario',
                     f'Hola {estudiante.p_nombre}, \n\nTu usuario es: {user.username}\n',
-                    'victorgabrieljunior@gmail.com',
+                    #'(agrega tu correo electronico)',
                     [recuperacion_request.correo],
                     fail_silently=False,
                 )
