@@ -23,7 +23,7 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Menu.urls')),
-    path('solicitud/', include('solicitud.urls'))
+    path('solicitud/', include('solicitud.urls')),
 ]
 
 #Ruta imagenes
