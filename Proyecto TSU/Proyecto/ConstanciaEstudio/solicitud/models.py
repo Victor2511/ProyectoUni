@@ -12,13 +12,13 @@ from io import BytesIO
 para generar la constancia de estudio, toda esta informacion es necesaria y se puede actualizar y migrar
 a la base de datos que se utilice"""
 
-"""Los modelos se aplican con la normalizacion de datos para mantener un orden de datos dependientes y indenpendientes
-entre si llegando hasta la 3FN y separando por completo. Algunas columnas dependera de otra columna en alguna tabla. Como el id de usuario
-Que se encontraria registrado originalmente en las tablas de autenticacion de DJANGO."""
 
-# La clase DataForm permite crear un modelo de BDD para la solicitud de informacion a un estudiante.
+# La clase Constancia permite crear un modelo de BDD para la solicitud de informacion a un estudiante.
 # Estos datos navegaran hasta el admin.py que requiere esta informacion para generar la constancia de estudio.
 
+""" Actualizacion: La nueva tabla Constancia hace referencia a student_registration mediante la variable estudiante
+tiene una nueva variable que habla acerca del estado de la solicitud de la constancia y una tabla de tipo boolean
+para validar de forma de checkbox si el estudiante es primera vez(o no) que solicita la constancia. """
 class Constancia(models.Model):
     estudiante = models.ForeignKey(student_registration, on_delete=models.CASCADE, related_name='solicitudes')
     fecha_solicitud = models.DateTimeField(default=timezone.now, verbose_name='Fecha de solicitud')
