@@ -28,4 +28,14 @@
 
         <input type="submit" value="Login" />
     </form>
+    
+    <div>
+        <p>¿Olvidaste tu usuario?</p>
+        <a href="{% url 'recuperar_usuario' %}">Recuperar usuario</a>
+    </div>
+
+    <div>
+        <p>¿Olvidaste tu contraseña?</p>
+        <a href="{% url 'recuperar_password' %}">Recuperar contraseña</a>
+    </div>
 {% endblock %}

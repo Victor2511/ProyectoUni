@@ -8,3 +8,4 @@ class MenuConfig(AppConfig):
     
     def ready(self):
         import Menu.signals
+    
