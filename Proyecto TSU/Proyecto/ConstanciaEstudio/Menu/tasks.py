@@ -8,7 +8,7 @@ def send_email_task(subject, message, recipient_list):
     send_mail(
         subject,
         message,
-        'victorgabrieljunior@gmail.com',  # Remitente
+        '',  # Remitente o correo electronico de donde se envia
         recipient_list,
         fail_silently=False
     )
