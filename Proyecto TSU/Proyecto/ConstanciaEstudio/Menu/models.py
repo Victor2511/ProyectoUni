@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.conf import settings
 import random
 from werkzeug.security import generate_password_hash
-from django.core.mail import send_mail
+from django_q.tasks import async_task
 
 # PERFIL DE USUARIO
 
@@ -58,7 +58,6 @@ class student_registration(models.Model):
         return f'{self.p_nombre[0].lower()}{self.p_apellido[0].lower()}{self.cedula}'
     
     def generate_password(self):
-        # Generador de passwords que toma valores minusculas, mayusculas, numeros y caracteres especiales
         minus = "abcdefghijklmnopqrstuvwxyz"
         mayus = minus.upper()
         numeros = "0123456789"
@@ -66,18 +65,17 @@ class student_registration(models.Model):
         
         base = minus + mayus + numeros + simbolos
         longitud = 12
-
-        for _ in range(10): #La cantidad de vueltas que encriptara el password generado para mas seguridad.
+        
+        for _ in range(10):
             muestra = random.sample(base, longitud)
             password = "".join(muestra)
             password_encriptado = generate_password_hash(password)
-            print("{} => {}".format(password, password_encriptado)) # Esto se puede quitar facilmente. Solo muestra en la terminal como encripta el password.
+            print("{} => {}".format(password, password_encriptado))
         
         return password
     
     def create_user_account(self):
         # Crear el usuario en el sistema de autenticacion
-        
         username = self.generate_username()
         password = self.generate_password()
         
@@ -89,15 +87,14 @@ class student_registration(models.Model):
             last_name=self.p_apellido
             )
         user.save()
-
-        """
-        send_mail(
-            'Informacion de Acceso',
-            f'Hola {self.p_nombre},\n\nTu cuenta ha sido creada exitosamente. \n\nUsuario: {username}\nPassword: {password}',
-            '(agrega el correo electronico)', # Recuerda que debes poner tu correo electronico aqui para enviar la informacion.
-            [self.correo],
-            fail_silently=False,
-        ) """
+        
+        # Enviar correo usando Django-Q
+        async_task(
+            'Menu.tasks.send_email_task',  # Nombre completo del módulo y función
+            'Información de Acceso',
+            f'Hola {self.p_nombre},\n\nTu cuenta ha sido creada exitosamente. \n\nUsuario: {username}\nContraseña: {password}',
+            [self.correo]
+        )
         
     def set_new_password(self, new_password):
         user = User.objects.get(email=self.correo)
@@ -202,8 +199,6 @@ class PeriodoAcademico(models.Model):
         return f'{self.inicio.strftime("%d/%m/%Y")} hasta {self.final.strftime("%d/%m/%Y")}'
     
     
-# Modelo de recuperacion de usuario, si cree que deberia haber un modelo para recuperacion de password
-# Puede crearlo.
 class RecuperacionUsuario(models.Model):
     #correo = models.ForeignKey('student_registration', on_delete=models.CASCADE, null=True, blank=True)
     correo = models.EmailField(verbose_name='Correo Electronico', null=True, blank=True)

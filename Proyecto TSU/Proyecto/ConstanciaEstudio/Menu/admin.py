@@ -4,6 +4,7 @@ from .models import student_registration
 from .models import User
 from .models import RecuperacionUsuario
 from django.core.mail import send_mail
+from django_q.tasks import async_task
 
 # PROFILE DETALLADO
 class ProfileAdmin(admin.ModelAdmin):
@@ -27,7 +28,7 @@ class StudentRegistrationAdmin(admin.ModelAdmin):
         for student in queryset:
             if not User.objects.filter(username=student.generate_username()).exists():
                 user = student.create_user_account()
-                self.message_user(request, f'Usuario creado: {user.username}')
+                self.message_user(request, f'Usuario creado: {student.generate_username()}')
                 
             else:
                 self.message_user(request, f'El usuario {student.generate_username()} ya existe.')
@@ -53,13 +54,13 @@ class RecuperacionUsuarioAdmin(admin.ModelAdmin):
                     continue
                 
                 # Enviar correo con usuario y contraseña
-                send_mail(
+                async_task(
+                    'Menu.tasks.send_email_task',
                     'Recuperacion de Usuario',
                     f'Hola {estudiante.p_nombre}, \n\nTu usuario es: {user.username}\n',
-                    #'(agrega tu correo electronico)',
                     [recuperacion_request.correo],
-                    fail_silently=False,
                 )
+                
                 recuperacion_request.recuperado = True
                 recuperacion_request.save()
         self.message_user(request, "Se han reenviado los usuarios al estudiante seleccionado")

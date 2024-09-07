@@ -3,14 +3,14 @@ from django.contrib import messages
 from Menu.forms import RegisterForm
 from .models import student_registration
 from .forms import RecuperacionUsuarioForm
-from .models import RecuperacionUsuario
 from .forms import RecuperarPasswordForm
 import random
 from werkzeug.security import generate_password_hash
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django_q.tasks import async_task
+
 
 # Create your views here.
 
@@ -29,7 +29,7 @@ def about(request):
     })
     
 
-# Funcion para validar el registro del estudiante
+
 def register_student(request):
     
     if request.method == 'POST':
@@ -38,7 +38,7 @@ def register_student(request):
             form.save()
             messages.success(request, 'Te has registrado correctamente.')
             return redirect('inicio')
-        else:
+        else: #????
             messages.error(request, 'Hubo un error en el formulario.')
     else:
         form = RegisterForm()
@@ -73,7 +73,7 @@ def login_page(request):
             'title': 'Identificate'
         })
         
-# Funcion para validar la recuperacion del usuario.
+
 def recuperar_usuario(request):
     recuperar_usuario = RecuperacionUsuarioForm()
     
@@ -98,7 +98,7 @@ def recuperar_usuario(request):
         'form': recuperar_usuario,
     })
     
-#Reciclaje del generador de password.
+    
 def generate_password():
         minus = "abcdefghijklmnopqrstuvwxyz"
         mayus = minus.upper()
@@ -112,18 +112,18 @@ def generate_password():
             muestra = random.sample(base, longitud)
             password = "".join(muestra)
             password_encriptado = generate_password_hash(password)
-            print("{} => {}".format(password, password_encriptado)) #Esto se puede quitar.
+            print("{} => {}".format(password, password_encriptado))
         
         return password
     
-# Funcion para validar la recuperacion de password y asignar una nueva.
+
 def recuperar_password(request):
     if request.method == 'POST':
         form = RecuperarPasswordForm(request.POST)
         if form.is_valid():
-            correo = form.cleaned_data['correo'] # Validar el campo correo
+            correo = form.cleaned_data['correo']
             try:
-                estudiante = student_registration.objects.get(correo=correo) # Referencia del correo para buscar al estudiante.
+                estudiante = student_registration.objects.get(correo=correo)
             except student_registration.DoesNotExist:
                 try:
                     estudiante = student_registration.objects.get(correo=correo)
@@ -132,14 +132,13 @@ def recuperar_password(request):
                     return redirect('recuperar_contraseña')
             
             nueva_password = generate_password()
-            estudiante.set_new_password(nueva_password) # Asignamos la nueva password generada.
-
-            send_mail(
+            estudiante.set_new_password(nueva_password)
+            
+            async_task(
+                'Menu.tasks.send_email_task',
                 'Recuperación de Contraseña',
                 f'Hola {estudiante.p_nombre},\n\nTu contraseña ha sido restablecida. Tu nueva contraseña es: {nueva_password}',
-                #'(Recuerda poner tu correo)',
                 [estudiante.correo],
-                fail_silently=False,
             )
 
             messages.success(request, 'Se ha enviado una nueva contraseña a tu correo electrónico.')
