@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
     'Menu.apps.MenuConfig',
     'solicitud',
     'rest_framework',
+    'preventconcurrentlogins',
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'preventconcurrentlogins.middleware.PreventConcurrentLoginsMiddleware',
 ]
 
 ROOT_URLCONF = 'ConstanciaEstudio.urls'
@@ -70,8 +74,11 @@ TEMPLATES = [
         },
     },
 ]
-
+# WSGI = WEB SERVER GATEWAY INTERFACE
 WSGI_APPLICATION = 'ConstanciaEstudio.wsgi.application'
+
+# ASGI = ASYNCHRONOUS SERVER GATEWAY INTERFACE
+ASGI_APPLICATION = 'ConstanciaEstudio.asgi.application'
 
 
 # Database
@@ -140,11 +147,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Servicio de correos electronicos:
-"""
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com' --> puede ser modificable con otros dominios por correo electronico
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'agrega aqui tu correo que manejara el envio de correos electronicos'
-EMAIL_HOST_PASSWORD = 'agrega aqui tu password de aplicacion'
-"""
+EMAIL_HOST_USER = 'victorgabrieljunior@gmail.com'
+EMAIL_HOST_PASSWORD = 'lhas wdki pqai fawa'
+
+
+# DJANGO-Q
+
+Q_CLUSTER = {
+    'name': 'Django Q',
+    'orm': 'default',  # Usar el ORM de Django para el almacenamiento de tareas
+    'workers': 4,      # Número de workers
+    'retry': 3600,     # Tiempo de reintento en segundos
+    'timeout': 3600,   # Tiempo de espera antes de marcar una tarea como fallida
+    'queue_limit': 50, # Limite de tareas en cola
+}
