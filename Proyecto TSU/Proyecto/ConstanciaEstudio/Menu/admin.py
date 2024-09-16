@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Profile
-from .models import student_registration
+from .models import student_registration, PeriodoAcademico
+from django.contrib.admin import DateFieldListFilter
 from .models import User
 from .models import RecuperacionUsuario
 from django.core.mail import send_mail
@@ -16,6 +17,12 @@ class ProfileAdmin(admin.ModelAdmin):
         return " - ".join([t.name for t in obj.user.groups.all().order_by('name')])
     
     user_group.short_description = 'Grupo'
+
+@admin.register(PeriodoAcademico)
+class PeriodoAcademicoAdmin(admin.ModelAdmin):
+    list_display = ('inicio', 'final')
+    search_fields = ('inicio', 'final')
+    list_filter = (('inicio', DateFieldListFilter), ('final', DateFieldListFilter))
     
 
 class StudentRegistrationAdmin(admin.ModelAdmin):
