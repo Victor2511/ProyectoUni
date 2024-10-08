@@ -1,17 +1,103 @@
-{% extends 'layouts/layout.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%} {% endblock %}</title>
 
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/visual.css' %}">
+</head>
+<body>
 
-{% block title %} {{title}} {% endblock %}
+  <nav>
+    <ul class="sidebar">
+        <li class="button-close" onclick="hideSidebar()">
+            <a href="#">
+                <!-- Ícono de cerrar -->
+                <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#000000">
+                    <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+                </svg>
+            </a>
+        </li>
+        <li><a href="{% url 'index' %}" class="sub-item">Inicio</a></li>
+        <li><a href="{% url 'login' %}" class="sub-item">Iniciar Sesion</a></li>
+    </ul>
+    <ul>
+        <a href="{% url 'index' %}">
+            <img src="{% static 'css/images/logo_unexca_white.png' %}" class="logo">
+        </a>
+        <li class="hidemobile"><a href="{% url 'index' %}" class="pri">Inicio</a></li>
+        <li class="hidemobile"><a href="{% url 'login' %}" class="pri">Iniciar Sesion</a></li>
+        <li class="button-menu" onclick="showSidebar()">
+            <a href="#">
+                <!-- Ícono de menú -->
+                <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
+                    <path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/>
+                </svg>
+            </a>
+        </li>
+    </ul>
+</nav>
 
-
-
-{% block content %}
-  <h2>{{ title }}</h2>
-  
-  <form method="post">
+<div class="container">
+  <div class="title">Registrarse</div>
+    <form method="post" id="form-validation" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Registrar Estudiante</button>
-  </form>
-  
-{% endblock %}
+    <div class="form-group">
+      {{ form.p_nombre }}
+    </div>
+    <div class="form-group">
+      {{ form.s_nombre }}
+    </div>
+
+    <div class="form-group">
+      {{ form.p_apellido }}
+    </div>
+    <div class="form-group">
+      {{ form.s_apellido }}
+    </div>
+
+    <div class="form-group">
+      {{ form.edad }}
+    </div>
+    <div class="form-group">
+      {{ form.cedula }}
+    </div>
+
+    <div class="form-group">
+      {{ form.correo }}
+    </div>
+    <div class="form-group">
+      {{ form.pnf.label_tag }}
+      {{ form.pnf }}
+    </div>
+
+    <div class="form-group">
+      {{ form.semestre.label_tag }}
+      {{ form.semestre }}
+    </div>
+    <div class="form-group">
+      {{ form.seccion.label_tag }}
+      {{ form.seccion }}
+    </div>
+
+    <div class="form-group">
+      {{ form.turno.label_tag }}
+      {{ form.turno }}
+    </div>
+    <div class="form-group">
+      {{ form.periodo_academico.label_tag }}
+      {{ form.periodo_academico }}
+    </div>
+    <!-- Agrega el resto de los campos aquí de forma similar -->
+    <div class="buttom">
+      <input type="submit" value="REGISTRAR">
+    </div>
+    </form>
+</div>
+
+
+</body>
+</html>

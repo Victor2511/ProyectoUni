@@ -1,41 +1,90 @@
-{% extends 'layouts/layout.html' %}
-
-
-{% block title %} {{title}} {% endblock %}
-
-<!--Pagina de login-->
-
-{% block content %}
-    <h1>{{title}}</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%} {% endblock %}</title>
     
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning">
-                {{message}}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/visual.css' %}">
+</head>
+<body>
+    <nav>
+        <ul class="sidebar">
+            <li class="button-close" onclick="hideSidebar()">
+                <a href="#">
+                    <!-- Ícono de cerrar -->
+                    <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#000000">
+                        <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+                    </svg>
+                </a>
+            </li>
+            <li><a href="{% url 'index' %}" class="sub-item">Inicio</a></li>
+            <li><a href="{% url 'register' %}" class="sub-item">Registro</a></li>
+        </ul>
+        <ul>
+            <a href="{% url 'index' %}">
+                <img src="{% static 'css/images/logo_unexca_white.png' %}" class="logo">
+            </a>
+            <li class="hidemobile"><a href="{% url 'index' %}" class="pri">Inicio</a></li>
+            <li class="hidemobile"><a href="{% url 'register' %}" class="pri">Registro</a></li>
+            <li class="button-menu" onclick="showSidebar()">
+                <a href="#">
+                    <!-- Ícono de menú -->
+                    <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
+                        <path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+        <main>
+            
+            <div class="contenedor__todo">
+                <div class="caja__trasera">
+                    <div class="caja__trasera-login">
+                        <h3>¿Ya tienes una cuenta?</h3>
+                        <p>Inicia sesión para entrar en la página</p>
+                        <button id="btn__iniciar-sesion">Iniciar Sesión</button>
+                    </div>
+                    <div class="caja__trasera-register">
+                        <h3>¿Aún no tienes una cuenta?</h3>
+                        <p>Regístrate para que puedas iniciar sesión</p>
+                        <a href="{% url 'register' %}">Registrarse</a>
+                    </div>
+                </div>
+                
+                <!--Formulario de Login y registro-->
+                <div class="contenedor__login-register">
+                    <!--Login-->
+                    <form method="POST" action="" class="formulario__login">
+                        {% csrf_token %}
+                        <h2>Iniciar Sesión</h2>
+                        
+                        
+                        <input type="text" name="username" placeholder="Usuario" />
+                        
+                        
+                        <input type="password" name="password" placeholder="Contraseña" />
+                        
+                        <input type="submit" value="Iniciar Sesion" />
+                        
+                        <div>
+                            <p>¿Olvidaste tu usuario?</p>
+                            <a href="{% url 'recuperar_usuario' %}">Recuperar usuario</a>
+                        </div>
+                        
+                        <div>
+                            <p>¿Olvidaste tu contraseña?</p>
+                            <a href="{% url 'recuperar_password' %}">Recuperar contraseña</a>
+                        </div>
+                    </form>
+                </div>
+                
             </div>
-        {% endfor %}
-    {% endif %}
-    <!--Aqui se crea el formulario y el metodo que recibira la informacion
-    tipo POST es mas segura-->
-    <form method="POST" action="">
-        <!--El csrf_token protege como pasa la informacion-->
-        {% csrf_token %}
-        <label for="username">Nombre de usuario:</label>
-        <input type="text" name="username" />
-
-        <label for="password">Contraseña:</label>
-        <input type="password" name="password" />
-
-        <input type="submit" value="Login" />
-    </form>
-    
-    <div>
-        <p>¿Olvidaste tu usuario?</p>
-        <a href="{% url 'recuperar_usuario' %}">Recuperar usuario</a>
-    </div>
-
-    <div>
-        <p>¿Olvidaste tu contraseña?</p>
-        <a href="{% url 'recuperar_password' %}">Recuperar contraseña</a>
-    </div>
-{% endblock %}
+        
+        </main>
+</body>
+</html>

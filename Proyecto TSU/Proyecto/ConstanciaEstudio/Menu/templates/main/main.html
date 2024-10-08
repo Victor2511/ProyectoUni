@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    
+    <link rel="stylesheet" href="{% static 'css/visual.css' %}">
+    <title>inicio</title>
+</head>
+<body>
+
+
+    <!--INICIO BARRA DE NAVEGACION-->
+    <nav>
+        <ul>
+            <a href="{% url 'index' %}">
+                <img src="{% static 'css/images/logo_unexca_white.png' %}" class="logo">
+            </a>
+
+            <li class="hidemobile"><a href="{% url 'index' %}" class="pri">Inicio</a></li>
+
+            {% if user.is_authenticated %}
+                <li class="hidemobile"><a href="{% url 'logout' %}" class="pri">Cerrar sesión</a></li>
+                <li class="hidemobile"><a href="{% url 'solicitud' %}" class="pri">Solicitud</a></li>
+            {% else %}
+                <li class="hidemobile"><a href="{% url 'register' %}" class="pri">Registro</a></li>
+                <li class="hidemobile"><a href="{% url 'login' %}" class="pri">Iniciar Sesion</a></li>
+            {% endif %}
+
+            <li class="button-menu" onclick="showSidebar()">
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
+                        <path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!--FIN BARRA DE NAVEGACION-->
+
+    <!--INICIO CARRUSEL-->
+    <div class="slider">  
+        <ul>
+            <li>
+                <img src="{% static 'css/images/gris_7.jpeg' %}" class="img-slider">
+                <div class="texto-slider">
+                    <h1>¡Solicita y genera tu constancia!</h1>
+                    <p class="parrafo-slider">
+                        "El valor de una educacion universitaria 
+                        no es el aprendizaje de muchos datos, sino 
+                        el entrenamiento de la mente para pensar".
+                    </p>
+
+                    <p class="cita-slider">
+                       <strong>Alber Einstein</strong>
+                    </p>
+                </div>
+            </li>
+
+            <li>                
+                <img src="{% static "css/images/gris_6.jpeg" %}" class="img-slider">
+                <div class="texto-slider">
+                    <h1>¡Registrate y accede al sistema!</h1>
+                    <p class="parrafo-slider">
+                       "El objetivo de la educación es la virtud y el deseo
+                       de convertirse en un buen ciudadano"
+                    </p>
+                    <p class="cita-slider">
+                        <strong>Platon</strong>
+                    </p>
+                </div>
+            </li>
+
+
+            <li>   
+                <img src="{% static "css/images/gris_2.jpeg" %}" class="img-slider">
+                <div class="texto-slider">
+                    <h1>¡Tu compromiso es importante!</h1>
+                    <p class="parrafo-slider">
+                        “La enseñanza que deja huella no es la que se hace de cabeza a cabeza, 
+                        sino de corazón a corazón.” 
+                    </p>
+                    <p class="cita-slider">
+                        <strong>Howard Hendricks</strong>
+                    </p>
+                </div>
+            </li>
+
+
+            <li>   
+                <img src="{% static "css/images/gris_5.jpeg" %}" class="img-slider">
+                <div class="texto-slider">
+                    <h1>¡Saludos estudiantes de la UNEXCA!</h1>
+                    <p class="parrafo-slider">
+                       "La educación no es la preparación para la vida;
+                       la educación es la vida misma."
+                    </p>
+                    <p class="cita-slider">
+                        <strong>Jhon Dewey</strong>
+                    </p>
+
+                </div>
+            </li>
+
+
+            <!--
+                No borrar este trozo de slider, por alguna razon al eliminar este codigo restante
+                se altera las dimensiones de las otras imagenes, lo cual ocaciona que el carrusel
+                se vea disparejo.
+            -->
+
+             <!--
+              POR FAVOR NO BORRAR!!!
+            -->
+
+            <li>   
+                <img src="{% static "css/images/gris_3.jpeg" %}" class="img-slider">
+                <div class="texto-slider">
+                    <h1>¡Solicita y genera tu constancia paso a paso!</h1>
+                    <p class="parrafo-slider">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                        Esse molestiae suscipit animi corrupti, sint fugiat porro excepturi placeat, 
+                        ullam pariatur consequuntur aliquam voluptates mollitia consectetur nemo rerum quam 
+                        earum repellendus.
+                    </p>
+                </div>
+            </li>
+            
+        </ul>
+    </div>
+
+
+     <!--FIN CARRUSEL DE IMAGENES-->
+    
+    <h4 class="title-description">
+        Sistema de contancia de estudios
+    </h4>
+    
+    <div class="container-description">
+    
+    
+        <div class="contenido-description">
+            
+            <div class="container-img-description">
+                <img src="{% static 'css/images/aprendizaje.jpg' %}" class="img-description">
+            </div>
+    
+            <div class="content-text">
+                <p class="description-text">
+                    <strong>Descripción:</strong> Este proyecto consiste en la elaboración de una aplicacion web desarrollada por un grupo de estudiantes de la universidad
+                    con el objetivo de automatizar y modernizar los tramites de solicitud y generación de constancia de estudios,
+                    para que todos los estudiantes adscritos a la institucion tengan acceso a este importante documento, el cual 
+                    puede ser utilizado en otras actividades dentro y fuera de la universidad.
+                    
+                </p>
+            </div>
+    
+    
+        </div>
+    
+    </div>
+
+
+     <!--INICIO CODIGO FOOTER-->
+
+     <footer class="footer">
+
+        <!--iconos de redes sociales-->
+
+        <ul class="social-network">
+            <li class="icon-elem">
+                <a href="#" class="icons">
+                    <ion-icon name="logo-facebook"></ion-icon>
+                </a>
+            </li>
+
+            <li class="icon-elem">
+                <a href="#" class="icons">
+                    <ion-icon name="logo-youtube"></ion-icon>
+                </a>
+            </li>
+
+            <li class="icon-elem">
+                <a href="#" class="icons">
+                    <ion-icon name="logo-whatsapp"></ion-icon>
+                </a>
+            </li>
+
+            <li class="icon-elem">
+                <a href="#" class="icons">
+                    <ion-icon name="mail-outline"></ion-icon>
+                </a>
+            </li>
+        </ul>
+
+        <!--OPCIONES DE MENU EN EL FOOTER-->
+
+            <ul class="menu">
+
+                <li class="menu-elem">
+                    <a href="#" class="menu-icon">
+                        Inicio
+                    </a>
+                </li>
+
+                <li class="menu-elem">
+                    <a href="{% url 'register' %}" class="menu-icon">
+                        Registro
+                    </a>
+                </li>
+
+                <li class="menu-elem"> 
+                    <a href="{% url 'login' %}" class="menu-icon">
+                        Iniciar Sesion
+                    </a>
+                </li>
+
+
+            </ul>
+
+             <!--CONTEDIDO EXTRA DEL FOOTER-->
+
+         <!--Telefono y direccion de la universidad--> 
+
+            <h4 class="subtitle-footer">
+                <strong>Dirección:</strong>
+            </h4>
+
+            <p class="datos">
+                Esquina Mijares Con Calle Norte 3, 
+                Carmelitas, Altagracia, Municipio Libertador.
+            </p>
+
+            <h4 class="subtitle-footer">
+                <strong>Telefono:</strong>
+            </h4>
+
+            <p class="datos">
+                (0212) 860.43.49
+            </p>
+    
+            <!--fin telefono y direccion de la universidad-->    
+    </footer>
+
+    <div class="section"> 
+        <p class="ex-footer">
+            @2024 | PROYECTO UNEXCA
+        </p>
+    </div>
+
+
+    <!--CODIGO JAVASCRIPT FOOTER-->
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!--CODIGO JAVASCRIPT FOOTER fin-->
+
+
+
+
+    <!--CODIGO JAVASCRIPT BARRA DE NAVGACION-->
+
+    <script>
+        function showSidebar(){
+            const sidebar = document.querySelector('.sidebar')
+            sidebar.style.display ='flex'
+        }
+
+
+        function hideSidebar(){
+            const sidebar = document.querySelector('.sidebar')
+            sidebar.style.display ='none'
+        }
+    </script>
+
+    <!--FINAL DE CODIGO JAVASCRIPT BARRA DE NAVGACION-->
+
+</body>
+</html>
