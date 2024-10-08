@@ -1,336 +1,431 @@
-*{
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0;
+/*  Se le aplica el siguente patron de uso universal
+    para hacere uso de los pseudoelementos after y 
+    before.  
+*/
+
+*,
+*:before,
+*:after{
     padding: 0;
-    text-decoration: none;
-    list-style: none;
+    margin: 0;
+    box-sizing: border-box;
 }
 
-/*header*/
-
-header{
-    width: 1700;
-    height: 70px;
-    background-color: #072e6c;
-    min-height: 70px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+body{
+    background-color: white;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.logo{
-    display: flex;
+/* CSS BARRA DE NAVEGATION*/
+
+nav{
+    background-color: midnightblue;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    height: 75px;
 }
-
-.logo img{
-    height: 70px;
-    display: flex;
-    align-items: center;
-
-}
-
-/*nav*/
 
 nav ul{
-    width: 350px;
-    height: 90px;
+    width: 100%;
+    list-style: none;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: center;
 }
 
-a{
-    color: white;
+nav li{
+    height: 70px;
+    display: flex;
+    margin-right: 20px;
 }
 
 nav a{
-    font-weight: 600;
-    padding-right: 10px;   
-}
-
-nav a:hover{
-    color: steelblue;
-    transform: scale(1.1);
+    height: 100%;
+    padding: 0 30px;
     text-decoration: none;
+    align-items: center;
+    color: white;
 }
 
-@media only screen and (max-width:700px){
-    header{
+/*  animacion menus barra de navegacion */
+.pri{
+    font-size: 25px;
+    padding-top: 20px;
+    letter-spacing: 0.5px;
+}
+
+/*  FINAL animacion de menus */
+
+
+
+/*  ENFECTO DE LINEA EN BARRA DE NAVEGACION USANDO LA CLASE .PRI */
+
+.pri::after{
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    background-color: aqua;
+    left: 0;
+    bottom: -10px;
+    transition: 0.5s;
+}
+
+.pri:hover{
+    color: aqua;
+}
+.pri:hover::after{
+    width: 100%;
+}
+
+/* FIN DEL CSS CLASE .PRI */
+
+
+
+/*  Estilo de letra de sub menu (clase sub-item) */
+nav .sub-item{
+    font-size: 22px;
+    color: black;
+    padding-top: 20px;
+    
+}
+
+.sub-item:hover{
+    background-color: midnightblue;
+}
+
+.sub-item{
+   transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+}
+
+.sub-item:hover{
+    color: white;
+}
+
+/* Final de estilo de submenu (clase sub-item) */
+
+/* TAMAÑO DE IMAGENES*/
+img{
+    height: 50px;
+    width: 85px;
+    color: white;
+}
+  /*  LOGO DE LA UNIVERSIDAD  */
+img .logo:hover{
+    background-color: none;
+}
+
+nav a:first-child{
+    margin-right: auto;
+}
+
+/*  MINI NAV  */
+
+.sidebar{
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 250px;
+    z-index: 999;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: -10px 0 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.sidebar li{
+    width: 100%;
+}
+
+.sidebar a{
+    width: 100%;
+}
+
+.button-close{
+    padding-top: 10px;
+    padding: -10px;
+}
+
+.button-menu{
+    display: none;
+    padding-top: 10px;
+}
+
+/*  NAV RESPONSIVE  */
+
+@media(max-width: 800px){
+    .hidemobile{
+        display: none;
+    }
+
+    .button-menu{
+        display: block;
+    }
+}
+
+
+@media(max-width: 400px){
+    .sidebar{
         width: 100%;
-        height: 100px;
-
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
     }
-
-    nav ul{
-        width: 350px;
-        height: 25px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-
-    }
-
-}
- 
-
-/*contenido central*/
-
-
-#content{
-    width: 1212px;
-    min-height: 930px;
-    margin: 0 auto;
-    margin-bottom: 30px;
-    margin-top: 40px;
-    font-family: sans-serif;  
 }
 
-.box{
-    background: #072e6c;
-    width: 80%;
-    min-height: 930px;
-    padding: 20px 10px;
-    border: 1px solid #072e6c;
-    border-radius: 2px;
-    margin: 0 auto;
-    font-family:sans-serif;
-    border-radius: 25px;
-    color: white;
-    
-}
+/*  FIN CSS BARRA DE NAVEGACION */
 
-.box .image{
-    width: 45%;
-    float: left;
-    margin-right: 40px;
-    
-}
 
-.box .image img{
-    width: 100%;
-}
+/* INICIO CSS CARRUSEL  */
 
-.box a{
-    color: #444;
-    transition: all 300ms;
-    font-family: sans-serif;
-}
-
-.box a:hover{
-    color: #2ba977;
-    font-family: sans-serif;
-}
-
-.box form{
-    width: 40%;
-}
-
-.box form input,
-.box form label{
-    display: block;
-    padding: 5px;
-    padding-left: 0px;
-    
-}
-
-.box form input[type="text"],
-.box form input[type="email"],
-.box form input[type="password"],
-.box form textarea,
-.box form select{
-    width: 100%;
-    margin-bottom: 6px;
-    border: 1px solid #ffffff;
-    border-radius: 8px; 
-    
-}
-
-.box form select{
-    width: 10px;
-    padding: 10px;
-}
-
-.box form input[type="submit"],
-.box form input[type="button"],
-.box form button{
-    padding: 10px;
-    margin-top: 5px;
-    background: #09a466;
-    border: 1px solid #09a466;
-    color: white;
-    transition: 300ms all;
-    border-radius: 10px;
-    font-family: sans-serif;
-    font-size: 105%;
-    font-size: 20px;
-    
-}
-
-.box form input[type="submit"]:hover,
-.box form input[type="button"]:hover,
-.box form button:hover{
-    cursor:pointer;
-    background: #104d18;
-    border: 1px solid #104d18;
-    transition: 300ms all;
-}
-
-.rojo{
-    color: red;
-}
-
-.message,
-.alert-sucesss,
-.alert{
-    padding: 20px;
-    background: #1f7e58;
-    color: white;
-    text-align: center;
-    margin-bottom: 10px;
-    font-family: sans-serif;
-   
-}
-
-.alert-warning{
-    background: #972824;
-}
-
-.title{
-    color: #444;
-    letter-spacing: 1px;
-    font-size: 30px;
-    margin-bottom: 10px;
-    margin-top: 5px;
-    font-family: sans-serif;
-}
-
-.date{
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    color: gray;
-}
-
-.content{
-    line-height: 25px;
-}
-
-.article-item{
-    margin-bottom: 20px;
-    margin-top: 20px;
-    border-bottom: 1px solid #eee;
-    padding: 15px;
-    clear: both;
-}
-
-.article-item .image{
-    width: 200px;
-    height: 200px;
-    float: left;
+.slider{
+    height: auto;
     overflow: hidden;
 }
 
-.article-item .image img{
-    width: 200px;
-    height: 200px;
-}
-
-.article-item .data{
-    float: left;
-    padding-top: 0px;
-}
-
-.article-item h2{
-    display: block;
-    font-size: 25px;
-    color: #333;
-    margin-bottom: 5px;
-    font-family: sans-serif;
-    
-}
-
-.article-item span.date{
-    display: block;
-    font-size: 15px;
-    color: gray;
-    margin-bottom: 10px;
-}
-
-.btn{
-    padding: 10px;
-    background: rgb(207, 48, 48);
-    color: white;
-    border: 1px solid black;
-    display: block;
-    margin-top: 15px;
-    width: 100px;
-    text-align: center;
-    
-}
-
-h1{
-    font-family: sans-serif;
-}
-
-label{
-    font-size: 20px;
-    font-family: sans-serif;
-    
-}
-/*Footer(pie de pagina)*/
-
-footer{
-    position:relative;
+.img-slider{
     width: 100%;
-    background-color: #072e6c;
+    height: 100vh;
+}
+
+
+.slider ul{
+    display: flex;
+    padding: 0;
+    margin: 0;
+    width: 500%;
+    animation: slide 20s infinite alternate ease-in-out;
+}
+.slider li{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    position: relative;
+}
+
+.texto-slider{
+    position: absolute;
+    text-align: center;
+    justify-content: center;
+    top: 100px;
+    color: #ffffff;
+    padding: 0 35px;
+}
+
+.texto-slider h1{
+    font-size: 75px;
+    margin-bottom: 20px;
+    padding: 0 30px;
+    margin-top: 20px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.parrafo-slider{
+    font-size: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 10px;
+    font-style: italic;
+    font-family: 'Times New Roman', Times, serif;
+
+}
+
+.cita-slider{
+    font-size: 45px;
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    margin-top: 15px;
+}
+
+
+/*  ANIMCION DEL CARRUSEL */
+
+@keyframes slide{
+    0% {margin-left: 0;}
+    20%{margin-left: 0;}
+
+    25% {margin-left: -100%;}
+    45% {margin-left: -100%;}
+
+    50% {margin-left: -200%;}
+    70% {margin-left: -200%;}
+
+    75% {margin-left: -300%;}
+    100% {margin-left: -300%;}
+}
+
+ /* FIN DE ANIMACION DEL CARRUSL  */
+
+/*  RESPONSIVE DE CARRUSEL PC */
+
+@media(max-width:991px){
+    body{
+        margin: 0;
+        padding: 0;
+    }
+
+    .slider{
+        width: 100%;
+    }
+
+    .texto-slider{
+        top: 40px;
+    }
+
+    .texto-slider h1{
+        font-size: 45px;
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+
+    .parrafo-slider {
+        font-size: 25px;
+    }
+
+    .cita-slider{
+        font-size: 20px;
+    }
+}
+
+/*  Codigo que evita que queden espacios
+en blanco en la parte inferior de la imagen  */
+@media(max-height: 991px){
+    .slider{
+        height: 100vh;
+    }    
+}
+
+/*  FIN DE CARRUSEL  */
+
+
+
+/*  SECTION DESCRIPTION CSS  */
+
+/* CONTAINER  */
+
+
+
+.title-description{
+    font-size: 40px;
+    font-family: "Lexend", sans-serif;
+    text-align: center;
+    padding: 20px;
+    text-decoration: underline;
+}
+
+.contenido-description{
+    display: flex;
+    padding: 30px;
+}
+
+
+
+/*  IMAGEN DE LA DESCRIPCION  */
+
+.img-description{
+
+    width: 540px;
+    height: 440px;
+    padding-right: 40px;
+
+}
+/*  contenedor de la descripcion del sistema */
+
+
+.content-text{
+    background-color: darkgrey;
+    padding: 0 15px;
+    margin-bottom: 5px;
+    border: 4px solid black;
+    border-radius: 8px;
+}
+
+.description-text{
+    padding: 2px;
+    font-size: 20px;
+    text-align: justify;
+    font-family: "Niramit", sans-serif;
+}
+
+
+/* RESPONSIVE DE LA SECCION DE DESCRIPCION  */
+
+@media(max-width:991px){
+
+    .contenido-description{
+        display: block;
+        padding: 12px;
+    }
+
+    .img-description{
+        width: 100%;
+        height: 280px;
+        margin-bottom: 15px;
+        padding-left: 30px;
+        
+    }
+
+    .content-text{
+        padding: 5px;
+        margin-left: 30px;
+        margin-right: 38px;
+        
+    }
+
+    .description-text{
+        font-size: 17px;
+    }
+
+}
+
+
+/* FIN DESCRIPCION DEL SISTEMA */
+
+
+/*  INICIO CSS FOOTER  */
+
+.footer{
+    width: 100%;
+    position: relative;
+    background: midnightblue;
     min-height: 100px;
     padding: 20px 50px;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    display:flex;
-}
-
-.social-icon{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+}
+
+.social-network{
+    display: flex;
     position: relative;
+    justify-content:center;
+    align-items: center;
     margin: 10px 5px;
-    flex-wrap:wrap ;
+    flex-wrap: wrap;
 }
 
 .icon-elem{
     list-style: none;
-
 }
 
-.icon{
+.icons{
     color: white;
-    font-size: 32px;
+    font-size: 40px;
     display: inline-block;
     margin: 0 10px;
     transition: 0.5s;
 }
 
-.icon:hover{
+.icons:hover{
     transform: translateY(-10px);
 }
-   
+
 .menu{
     display: flex;
     justify-content: center;
-    position: center;
+    position: relative;
     align-items: center;
     margin: 10px 0;
     flex-wrap: wrap;
@@ -342,11 +437,11 @@ footer{
 
 .menu-icon{
     color: white;
-    font-size: 20px;
+    font-size: 25px;
     display: inline-block;
     text-decoration: none;
-    margin: 5px 10px ;
-    opacity: 0.75;
+    margin: 5px 10px;
+    opacity: 0.5;
     transition: 0.3s;
 }
 
@@ -354,10 +449,49 @@ footer{
     opacity: 1;
 }
 
-.text{
-    color: white;
+.text-footer{
     text-align: center;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    color: white;
     font-size: 20px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+
+/*   titulo de direccion de universidad   */
+.subtitle-footer{
+    font-size: 25px;
+    text-align: center;
+    color: white;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/*  Direcccion y telefono de la universidad */
+.datos{
+    font-size: 22px;
+    text-align: center;
+    color: white;
+    justify-content: center;
+    margin-top: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/*  Seccion de color gris  (PROYECTO UNEXCA 2024) */
+.section{
+    background-color: #807e7e;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 40px;
+    display: flex;
+}
+
+.ex-footer{
+    text-align: center;
+    color: white;
+    font-size: 22px;
+    margin-top: 12px;
+    margin-bottom: 10px;
 }
