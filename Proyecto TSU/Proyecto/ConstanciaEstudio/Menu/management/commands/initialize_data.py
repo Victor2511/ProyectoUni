@@ -1,6 +1,6 @@
 from typing import Any
 from django.core.management.base import BaseCommand
-from Menu.models import Carrera, Turno, Semestre, Seccion, PeriodoAcademico
+from Menu.models import Carrera, Turno, Semestre, Seccion, PeriodoAcademico, TipoEstudiante
 from datetime import date
 
 """Lo que esta a continuacion es un Script de automatizacion de creacion de datos. Ayuda para ingresar datos de ejemplo o
@@ -28,6 +28,9 @@ class Command(BaseCommand):
         Seccion.objects.get_or_create(n_seccion=1000)
         Seccion.objects.get_or_create(n_seccion=1100)
         Seccion.objects.get_or_create(n_seccion=1200)
+        
+        TipoEstudiante.objects.get_or_create(tipo_estudiante='Regular')
+        TipoEstudiante.objects.get_or_create(tipo_estudiante='Nuevo Ingreso')
         
         for semestre in range(1,9):
             Semestre.objects.get_or_create(n_semestre=semestre)
