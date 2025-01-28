@@ -1,11 +1,15 @@
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.forms import ValidationError
 from django.utils import timezone
 from django.conf import settings
 import random
 from werkzeug.security import generate_password_hash
 from django_q.tasks import async_task
+from django.core.validators import FileExtensionValidator
+from django.utils.html import format_html
 
 # PERFIL DE USUARIO
 
@@ -17,8 +21,8 @@ class Profile(models.Model):
     telephone = models.CharField(max_length=50, null=True, blank=True, verbose_name='Telefono')
     
     class Meta:
-        verbose_name = 'perfil'
-        verbose_name_plural = 'perfiles'
+        verbose_name = 'Perfil'
+        verbose_name_plural = 'Perfiles'
         ordering = ['-id']
     
     def __str__(self):
@@ -48,6 +52,11 @@ class student_registration(models.Model):
     semestre = models.ForeignKey('Semestre', on_delete=models.CASCADE)
     turno = models.ForeignKey('Turno', on_delete=models.CASCADE)
     periodo_academico = models.ForeignKey('PeriodoAcademico', on_delete=models.CASCADE)
+    tipo_estudiante = models.ForeignKey('TipoEstudiante', on_delete=models.CASCADE)
+    
+    class Meta:
+        verbose_name = 'Estudiante Registrado'
+        verbose_name_plural = 'Estudiantes Registrados'
     
     def __str__(self):
         return f'{self.p_nombre} {self.s_nombre} {self.p_apellido} {self.s_apellido} - {self.cedula} - {self.correo}'
@@ -66,7 +75,7 @@ class student_registration(models.Model):
         base = minus + mayus + numeros + simbolos
         longitud = 12
         
-        for _ in range(10):
+        for _ in range(1):
             muestra = random.sample(base, longitud)
             password = "".join(muestra)
             password_encriptado = generate_password_hash(password)
@@ -195,10 +204,66 @@ class PeriodoAcademico(models.Model):
     inicio = models.DateField()
     final = models.DateField()
     
+    class Meta:
+        verbose_name = 'Periodo Academico'
+        verbose_name_plural = 'Periodos Academicos'
+    
     def __str__(self):
         return f'{self.inicio.strftime("%d/%m/%Y")} hasta {self.final.strftime("%d/%m/%Y")}'
     
     
+class TipoEstudiante(models.Model):
+    REGULAR = 'Regular'
+    NUEVO_INGRESO = 'Nuevo Ingreso'
+    
+    TIPO_CHOICES = [
+        (REGULAR, 'Regular'),
+        (NUEVO_INGRESO, 'Nuevo Ingreso')
+    ]
+    
+    tipo_estudiante = models.CharField(
+        max_length=15,
+        default=REGULAR,
+        null=False,
+        blank=False,
+        choices=TIPO_CHOICES,
+    )
+    def __str__(self):
+        return self.tipo_estudiante
+
+class Documentos(models.Model):
+    estudiante = models.ForeignKey(student_registration, on_delete=models.CASCADE, related_name="documentos")
+    archivos = models.FileField(
+        upload_to='documentos/',
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'png']),
+        ],
+    )
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+    
+    
+
+class CarnetEstudiantil(models.Model):
+    estudiante = models.OneToOneField(
+        'student_registration',
+        on_delete=models.CASCADE,
+        verbose_name='Estudiante'
+    )
+    numero_carnet = models.CharField(max_length=20, unique=True, verbose_name='Numero de Carnet')
+    codigo_barras = models.ImageField(upload_to='carnets/', verbose_name='Codigo de Barras')
+    emitido_en = models.DateTimeField(default=timezone.now, verbose_name='Fecha de emision')
+    expiracion = models.DateField(verbose_name='Fecha de Expiracion')
+    
+    class Meta:
+        verbose_name = 'Carnet Estudiantil'
+        verbose_name_plural = 'Carnets Estudiantiles'
+    def __str__(self):
+        return f'Carnet - {self.estudiante.p_nombre} {self.estudiante.p_apellido}'
+    
+    def generar_codigo_barras(self):
+        # Metodo para generar el codigo de barras del carnet
+        pass # Implementacion futura
+
 class RecuperacionUsuario(models.Model):
     #correo = models.ForeignKey('student_registration', on_delete=models.CASCADE, null=True, blank=True)
     correo = models.EmailField(verbose_name='Correo Electronico', null=True, blank=True)

@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout/', views.logout_user, name="logout"),
     path('recuperar-usuario/', views.recuperar_usuario, name='recuperar_usuario'),
     path('recuperar-contraseña/', views.recuperar_password, name='recuperar_password'),
+    path('descargar-documentos/<int:student_id>/', views.descargar_documentos, name='descargar_documentos'),
 ]

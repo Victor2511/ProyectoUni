@@ -1,7 +1,8 @@
+from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from Menu.forms import RegisterForm
-from .models import student_registration
+from .models import student_registration, Documentos
 from .forms import RecuperacionUsuarioForm
 from .forms import RecuperarPasswordForm
 import random
@@ -10,45 +11,72 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django_q.tasks import async_task
+import os
+import zipfile
+from django.http import HttpResponse
+from django.conf import settings
 
-
-# Create your views here.
-
-# Creacion del menu principal
 
 def index(request):
     
-    return render(request, 'mainapp/index.html', {
+    return render(request, 'main/main.html', {
         'title': 'Inicio'
     })
-    
-def about(request):
-    
-    return render(request, 'mainapp/about.html', {
-        'title': 'Sobre nosotros'
-    })
-    
 
+# Crear el formset
+DocumentosFormSet = inlineformset_factory(
+    student_registration,  # Modelo principal
+    Documentos,  # Modelo relacionado
+    fields=('archivos',),  # Campos que quieres mostrar
+    extra=4,  # Número de formularios vacíos adicionales
+)
 
 def register_student(request):
-    
     if request.method == 'POST':
         form = RegisterForm(request.POST)
+        document_formset = DocumentosFormSet(request.POST, request.FILES)  # Inicializar el formset para manejar errores
+
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Te has registrado correctamente.')
-            return redirect('inicio')
-        else: #????
+            # Guardar el estudiante principal
+            student = form.save()
+            
+            # Asignar el estudiante al formset y validar
+            document_formset = DocumentosFormSet(request.POST, request.FILES, instance=student)
+            if document_formset.is_valid():
+                document_formset.save()
+                messages.success(request, 'Te has registrado correctamente.')
+                return redirect('inicio')
+            else:
+                messages.error(request, 'Hubo un error al procesar los documentos.')
+        else:
             messages.error(request, 'Hubo un error en el formulario.')
     else:
         form = RegisterForm()
+        document_formset = DocumentosFormSet()  # Formset vacío para solicitudes GET
     
     return render(request, 'users/register.html', {
         'title': 'Registro de Estudiante',
         'form': form,
+        'document_formset': document_formset,  # Asegúrate de incluir el formset en el contexto
     })
 
+def descargar_documentos(request, student_id):
+    student = student_registration.objects.get(pk=student_id)
+    documentos = student.documentos.all()  # Obtener documentos relacionados
 
+    # Crear un archivo ZIP en memoria
+    zip_filename = f"documentos_estudiante_{student_id}.zip"
+    zip_path = os.path.join(settings.MEDIA_ROOT, zip_filename)
+    with zipfile.ZipFile(zip_path, 'w') as zip_file:
+        for documento in documentos:
+            file_path = documento.archivos.path
+            zip_file.write(file_path, os.path.basename(file_path))
+
+    # Responder con el ZIP para su descarga
+    response = HttpResponse(open(zip_path, 'rb'), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename={zip_filename}'
+    os.remove(zip_path)  # Eliminar el archivo ZIP después de enviarlo
+    return response
 
 #Funcion del login
 def login_page(request):
@@ -108,7 +136,7 @@ def generate_password():
         base = minus + mayus + numeros + simbolos
         longitud = 12
         
-        for _ in range(10):
+        for _ in range(1):
             muestra = random.sample(base, longitud)
             password = "".join(muestra)
             password_encriptado = generate_password_hash(password)

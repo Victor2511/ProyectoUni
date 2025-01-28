@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from . models import RecuperacionUsuario
 from django.contrib.auth.models import User
-from .models import student_registration, Carrera, Semestre, Seccion, Turno, PeriodoAcademico
+from .models import student_registration, Carrera, Semestre, Seccion, Turno, PeriodoAcademico, Documentos, CarnetEstudiantil, TipoEstudiante
 from django.utils.translation import gettext_lazy as _
 import re
 from django.core.exceptions import ValidationError
@@ -91,16 +91,19 @@ class CustomUserCreationForm(UserCreationForm):
         return user
 
 
-class RegisterForm(forms.ModelForm): #Se asigna distintos campos que seran llamados desde la base de datos
+class RegisterForm(forms.ModelForm):
+    # Campos relacionados con los modelos de selección
+    pnf = forms.ModelChoiceField(queryset=Carrera.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    semestre = forms.ModelChoiceField(queryset=Semestre.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    seccion = forms.ModelChoiceField(queryset=Seccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    turno = forms.ModelChoiceField(queryset=Turno.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    periodo_academico = forms.ModelChoiceField(queryset=PeriodoAcademico.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    tipo_estudiante = forms.ModelChoiceField(queryset=TipoEstudiante.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    
     class Meta:
-        """Recuerda que campo deben ser tal cual los nombres registrados en el modelo de bases de datos"""
-        
-        model = student_registration 
-        fields = ['p_nombre', 's_nombre', 'p_apellido', 's_apellido', 'edad', 'cedula', 'correo', 'pnf', 'semestre',
-                'seccion', 'turno', 'periodo_academico']
-        
-        """Los formularios son totalmente modificables, en este caso llamando los campos registrados
-        y asignandoles un nombre clave que se vera visualmente."""
+        model = student_registration
+        fields = ['p_nombre', 's_nombre', 'p_apellido', 's_apellido', 'edad', 'cedula', 'correo', 'pnf',
+                    'semestre', 'seccion', 'turno', 'periodo_academico', 'tipo_estudiante']
         
         labels = {
             'p_nombre': 'Primer Nombre',
@@ -108,45 +111,51 @@ class RegisterForm(forms.ModelForm): #Se asigna distintos campos que seran llama
             'p_apellido': 'Primer Apellido',
             's_apellido': 'Segundo Apellido',
             'edad': 'Edad',
-            'cedula': 'Cedula',
-            'Correo Electronico': 'Correo',
+            'cedula': 'Cédula',
+            'correo': 'Correo Electrónico',
             'pnf': 'PNF',
             'semestre': 'Semestre',
-            'seccion': 'seccion',
-            'turno': 'turno',
-            'periodo_academico': 'Periodo academico',
+            'seccion': 'Sección',
+            'turno': 'Turno',
+            'periodo_academico': 'Periodo Académico',
+            'tipo_estudiante': 'Tipo de Estudiante'
         }
-        
-        """Con la variable widget permites la configuracion de los formularios y su entrada de datos.
-        Por ejemplo: TextInput(), cuyo metodo es para recibir informacion de tipo texto."""
         
         widgets = {
-            'p_nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            's_nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'p_apellido': forms.TextInput(attrs={'class': 'form-control'}),
-            's_apellido': forms.TextInput(attrs={'class': 'form-control'}),
-            'edad': forms.NumberInput(attrs={'class': 'form-control'}),
-            'cedula': forms.NumberInput(attrs={'class': 'form-control'}),
-            'correo': forms.EmailInput(attrs={'class': 'form-control'}),
-            'pnf': forms.Select(attrs={'class': 'form-control'}),
-            'semestre': forms.Select(attrs={'class': 'form-control'}),
-            'seccion': forms.Select(attrs={'class': 'form-control'}),
-            'turno': forms.Select(attrs={'class': 'form-control'}),
-            'periodo_academico': forms.Select(attrs={'class': 'form-control'}),
+            'p_nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Primer Nombre'}),
+            's_nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Segundo Nombre'}),
+            'p_apellido': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Primer Apellido'}),
+            's_apellido': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Segundo Apellido'}),
+            'edad': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Edad'}),
+            'cedula': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cédula'}),
+            'correo': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo Electrónico'}),
         }
-    
-    """Se puede agregar una configuracion extra para el metodo de Select(), pues con el metodo ModelChoiceField muestras
-    los valores que se presentaran en el campo de seleccion registrados en el modelo de base de datos. En este caso con el modelo
-    all() es para recibir todos los datos dentro del modelo."""
-    
-    pnf = forms.ModelChoiceField(queryset=Carrera.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    semestre = forms.ModelChoiceField(queryset=Semestre.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    seccion = forms.ModelChoiceField(queryset=Seccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    turno = forms.ModelChoiceField(queryset=Turno.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    periodo_academico = forms.ModelChoiceField(queryset=PeriodoAcademico.objects.all(), 
-                                                widget=forms.Select(attrs={'class': 'form-control'}))
-    
-    
+
+# Formulario de Documentos
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Documentos
+        fields = ('archivos',)
+        widgets = {
+            'archivos': forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}),
+        }
+        
+    def clean_archivos(self):
+        archivo = self.cleaned_data.get('archivos')
+        max_tamano_mb = 5  # Tamaño máximo permitido en MB
+        if archivo.size > max_tamano_mb * 1024 * 1024:
+            raise forms.ValidationError(f"El archivo no puede superar los {max_tamano_mb} MB.")
+        return archivo
+
+# Crear un inline formset para asociar documentos al registro de estudiante
+DocumentFormSet = forms.inlineformset_factory(
+    student_registration,
+    Documentos,
+    form=DocumentForm,
+    extra=1,
+    can_delete=True
+)
+
 class RecuperacionUsuarioForm(forms.ModelForm):
     class Meta:
         model = RecuperacionUsuario
@@ -159,4 +168,13 @@ class RecuperacionUsuarioForm(forms.ModelForm):
         }
     
 class RecuperarPasswordForm(forms.Form):
-    correo = forms.EmailField(label='Correo electronico', max_length=254)
+    correo = forms.EmailField(
+        label='Correo electronico', 
+        max_length=254,
+        widget=forms.EmailInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Introduce tu correo'
+            }
+        )
+    )

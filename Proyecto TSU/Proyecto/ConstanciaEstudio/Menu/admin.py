@@ -1,11 +1,13 @@
 from django.contrib import admin
 from .models import Profile
-from .models import student_registration, PeriodoAcademico
+from .models import student_registration, PeriodoAcademico, Documentos
 from django.contrib.admin import DateFieldListFilter
 from .models import User
 from .models import RecuperacionUsuario
 from django.core.mail import send_mail
 from django_q.tasks import async_task
+from django.utils.html import format_html
+from django.urls import reverse
 
 # PROFILE DETALLADO
 class ProfileAdmin(admin.ModelAdmin):
@@ -17,17 +19,21 @@ class ProfileAdmin(admin.ModelAdmin):
         return " - ".join([t.name for t in obj.user.groups.all().order_by('name')])
     
     user_group.short_description = 'Grupo'
-
+    
+    
 @admin.register(PeriodoAcademico)
 class PeriodoAcademicoAdmin(admin.ModelAdmin):
     list_display = ('inicio', 'final')
     search_fields = ('inicio', 'final')
     list_filter = (('inicio', DateFieldListFilter), ('final', DateFieldListFilter))
-    
 
 class StudentRegistrationAdmin(admin.ModelAdmin):
-    list_display = ('p_nombre', 's_nombre', 'p_apellido', 's_apellido', 'cedula', 'correo', 'pnf', 'seccion', 'semestre', 'creado_en')
+    list_display = ('p_nombre', 's_nombre', 'p_apellido', 's_apellido', 
+                    'cedula', 'correo', 'pnf', 'seccion', 'semestre', 
+                    'tipo_estudiante', 'mostrar_documentos', 'creado_en'
+    )
     search_fields = ('p_nombre', 'p_apellido', 'cedula', 'correo', 'pnf')
+    list_filter = ('tipo_estudiante',)
     
     actions = ['create_user_account_action']
     
@@ -40,6 +46,16 @@ class StudentRegistrationAdmin(admin.ModelAdmin):
             else:
                 self.message_user(request, f'El usuario {student.generate_username()} ya existe.')
     create_user_account_action.short_description = "Crear cuenta de usuario para estudiantes seleccionados"
+    
+    def tipo_estudiante(self, obj):
+        return obj.tipo_estudiante
+    tipo_estudiante.short_description = "Tipo de Estudiante"
+    
+    # Nuevo método para mostrar los documentos relacionados
+    def mostrar_documentos(self, obj):
+        url = reverse('descargar_documentos', args=[obj.id])  # Generar la URL al ZIP
+        return format_html('<a href="{}" target="_blank">Ver/Descargar</a>', url)
+    mostrar_documentos.short_description = "Documentos"
 
 class RecuperacionUsuarioAdmin(admin.ModelAdmin):
     list_display = ('correo', 'fecha_solicitud', 'recuperado')
@@ -61,6 +77,7 @@ class RecuperacionUsuarioAdmin(admin.ModelAdmin):
                     continue
                 
                 # Enviar correo con usuario y contraseña
+                
                 async_task(
                     'Menu.tasks.send_email_task',
                     'Recuperacion de Usuario',
@@ -74,8 +91,12 @@ class RecuperacionUsuarioAdmin(admin.ModelAdmin):
     
     recuperar_usuario.short_description = "Recuperar Usuario"
 
+class DocumentosAdmin(admin.ModelAdmin):
+    list_display = ('archivos', 'fecha_subida')
+    search_fields = ('archivos',)
+    list_filter = ('fecha_subida',)
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(student_registration, StudentRegistrationAdmin)
 admin.site.register(RecuperacionUsuario, RecuperacionUsuarioAdmin)
-
+admin.site.register(Documentos, DocumentosAdmin)
