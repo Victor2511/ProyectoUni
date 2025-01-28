@@ -41,9 +41,10 @@
     </ul>
 </nav>
 
+
 <div class="container">
   <div class="title">Registrarse</div>
-    <form method="post" id="form-validation" novalidate>
+    <form method="post" enctype="multipart/form-data" id="form-validation" novalidate>
     {% csrf_token %}
     <div class="form-group">
       {{ form.p_nombre }}
@@ -91,6 +92,23 @@
       {{ form.periodo_academico.label_tag }}
       {{ form.periodo_academico }}
     </div>
+    <div class="form-group">
+      {{ form.tipo_estudiante.label_tag}}
+      {{ form.tipo_estudiante }}
+    </div>
+    
+    <!-- Campos para subir archivos -->
+    <div class="form-group">
+      <h3>Documentos:</h3>
+      {{ document_formset.management_form }}
+      {% for form in document_formset %}
+        <div class="document-group">
+          {{ form.archivos.label_tag }}
+          {{ form.archivos }}
+        </div>
+      {% endfor %}
+    </div>
+
     <!-- Agrega el resto de los campos aquí de forma similar -->
     <div class="buttom">
       <input type="submit" value="REGISTRAR">
