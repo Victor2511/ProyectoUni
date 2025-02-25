@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash
 from django_q.tasks import async_task
 from django.core.validators import FileExtensionValidator
 from django.utils.html import format_html
+from datetime import timedelta
 
 # PERFIL DE USUARIO
 
@@ -232,37 +233,68 @@ class TipoEstudiante(models.Model):
         return self.tipo_estudiante
 
 class Documentos(models.Model):
-    estudiante = models.ForeignKey(student_registration, on_delete=models.CASCADE, related_name="documentos")
-    archivos = models.FileField(
+    FOTO_CARNET = 'Foto Carnet'
+    CEDULA = 'Cédula'
+    NOTAS = 'Notas Certificadas'
+    TITULO = 'Título'
+    PARTIDA_NACIMIENTO = 'Partida de Nacimiento'
+    
+    TIPO_DOCUMENTO_CHOICES = [
+        (FOTO_CARNET, 'Foto Carnet'),
+        (CEDULA, 'Cédula'),
+        (NOTAS, 'Notas Certificadas'),
+        (TITULO, 'Título'),
+        (PARTIDA_NACIMIENTO, 'Partida de Nacimiento'),
+    ]
+
+    estudiante = models.ForeignKey(
+        student_registration,
+        on_delete=models.CASCADE,
+        related_name="documentos"
+    )
+    tipo_documento = models.CharField(
+        max_length=25,
+        choices=TIPO_DOCUMENTO_CHOICES,
+        verbose_name="Tipo de Documento"
+    )
+    archivo = models.FileField(
         upload_to='documentos/',
-        validators=[
-            FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'png']),
-        ],
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'png'])],
+        verbose_name="Archivo"
     )
     fecha_subida = models.DateTimeField(auto_now_add=True)
-    
-    
+
+    class Meta:
+        verbose_name = "Documento"
+        verbose_name_plural = "Documentos"
+
+    def __str__(self):
+        return f"{self.tipo_documento} - {self.estudiante.p_nombre} {self.estudiante.p_apellido}"
+
 
 class CarnetEstudiantil(models.Model):
     estudiante = models.OneToOneField(
-        'student_registration',
+        'student_registration',  # Ajustamos el nombre del modelo
         on_delete=models.CASCADE,
         verbose_name='Estudiante'
     )
-    numero_carnet = models.CharField(max_length=20, unique=True, verbose_name='Numero de Carnet')
-    codigo_barras = models.ImageField(upload_to='carnets/', verbose_name='Codigo de Barras')
-    emitido_en = models.DateTimeField(default=timezone.now, verbose_name='Fecha de emision')
-    expiracion = models.DateField(verbose_name='Fecha de Expiracion')
-    
+    numero_carnet = models.CharField(max_length=20, unique=True, verbose_name='Número de Carnet')
+    codigo_barras = models.ImageField(upload_to='carnets/', verbose_name='Código de Barras')
+    emitido_en = models.DateTimeField(default=timezone.now, verbose_name='Fecha de Emisión')
+    expiracion = models.DateField(
+        verbose_name='Fecha de Expiración',
+        default=timezone.now() + timedelta(days=365)  # Expira en 1 año por defecto
+    )
+    pdf_carnet = models.FileField(upload_to='carnets_pdf/', null=True, blank=True, verbose_name='Carnet en PDF')
+
     class Meta:
         verbose_name = 'Carnet Estudiantil'
         verbose_name_plural = 'Carnets Estudiantiles'
+
     def __str__(self):
         return f'Carnet - {self.estudiante.p_nombre} {self.estudiante.p_apellido}'
-    
-    def generar_codigo_barras(self):
-        # Metodo para generar el codigo de barras del carnet
-        pass # Implementacion futura
 
 class RecuperacionUsuario(models.Model):
     #correo = models.ForeignKey('student_registration', on_delete=models.CASCADE, null=True, blank=True)
