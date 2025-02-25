@@ -92,19 +92,21 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class RegisterForm(forms.ModelForm):
-    # Campos relacionados con los modelos de selección
+    # Campos relacionados con modelos de selección
     pnf = forms.ModelChoiceField(queryset=Carrera.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     semestre = forms.ModelChoiceField(queryset=Semestre.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     seccion = forms.ModelChoiceField(queryset=Seccion.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     turno = forms.ModelChoiceField(queryset=Turno.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     periodo_academico = forms.ModelChoiceField(queryset=PeriodoAcademico.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
     tipo_estudiante = forms.ModelChoiceField(queryset=TipoEstudiante.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    
+
     class Meta:
         model = student_registration
-        fields = ['p_nombre', 's_nombre', 'p_apellido', 's_apellido', 'edad', 'cedula', 'correo', 'pnf',
-                    'semestre', 'seccion', 'turno', 'periodo_academico', 'tipo_estudiante']
-        
+        fields = [
+            'p_nombre', 's_nombre', 'p_apellido', 's_apellido', 'edad', 'cedula', 'correo',
+            'pnf', 'semestre', 'seccion', 'turno', 'periodo_academico', 'tipo_estudiante',
+        ]
+
         labels = {
             'p_nombre': 'Primer Nombre',
             's_nombre': 'Segundo Nombre',
@@ -118,9 +120,9 @@ class RegisterForm(forms.ModelForm):
             'seccion': 'Sección',
             'turno': 'Turno',
             'periodo_academico': 'Periodo Académico',
-            'tipo_estudiante': 'Tipo de Estudiante'
+            'tipo_estudiante': 'Tipo de Estudiante',
         }
-        
+
         widgets = {
             'p_nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Primer Nombre'}),
             's_nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Segundo Nombre'}),
@@ -131,20 +133,29 @@ class RegisterForm(forms.ModelForm):
             'correo': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo Electrónico'}),
         }
 
-# Formulario de Documentos
+
+# Formulario para documentos adicionales
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Documentos
-        fields = ('archivos',)
+        fields = ('tipo_documento', 'archivo',)
         widgets = {
-            'archivos': forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}),
+            'tipo_documento': forms.Select(attrs={'class': 'form-control'}),
+            'archivo': forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}),
         }
-        
-    def clean_archivos(self):
-        archivo = self.cleaned_data.get('archivos')
-        max_tamano_mb = 5  # Tamaño máximo permitido en MB
-        if archivo.size > max_tamano_mb * 1024 * 1024:
-            raise forms.ValidationError(f"El archivo no puede superar los {max_tamano_mb} MB.")
+
+    def clean_archivo(self):
+        archivo = self.cleaned_data.get('archivo')
+        if archivo:
+            # Validar tamaño del archivo (5MB)
+            max_tamano_mb = 5
+            if archivo.size > max_tamano_mb * 1024 * 1024:
+                raise forms.ValidationError(f"El archivo no puede superar los {max_tamano_mb} MB.")
+
+            # Validar tipo de archivo permitido
+            extensiones_permitidas = ['pdf', 'jpg', 'png']
+            if not archivo.name.lower().endswith(tuple(extensiones_permitidas)):
+                raise forms.ValidationError("Solo se permiten archivos en formato PDF, JPG o PNG.")
         return archivo
 
 # Crear un inline formset para asociar documentos al registro de estudiante
@@ -155,6 +166,7 @@ DocumentFormSet = forms.inlineformset_factory(
     extra=1,
     can_delete=True
 )
+
 
 class RecuperacionUsuarioForm(forms.ModelForm):
     class Meta:
