@@ -44,76 +44,69 @@
 
 <div class="container">
   <div class="title">Registrarse</div>
-    <form method="post" enctype="multipart/form-data" id="form-validation" novalidate>
+  <form method="post" enctype="multipart/form-data" id="form-validation" novalidate>
     {% csrf_token %}
+
+    <!-- Información del estudiante -->
     <div class="form-group">
-      {{ form.p_nombre }}
+      {{ form.p_nombre.label_tag }} {{ form.p_nombre }}
     </div>
     <div class="form-group">
-      {{ form.s_nombre }}
+      {{ form.s_nombre.label_tag }} {{ form.s_nombre }}
+    </div>
+    <div class="form-group">
+      {{ form.p_apellido.label_tag }} {{ form.p_apellido }}
+    </div>
+    <div class="form-group">
+      {{ form.s_apellido.label_tag }} {{ form.s_apellido }}
+    </div>
+    <div class="form-group">
+      {{ form.edad.label_tag }} {{ form.edad }}
+    </div>
+    <div class="form-group">
+      {{ form.cedula.label_tag }} {{ form.cedula }}
+    </div>
+    <div class="form-group">
+      {{ form.correo.label_tag }} {{ form.correo }}
     </div>
 
+    <!-- Información académica -->
     <div class="form-group">
-      {{ form.p_apellido }}
+      {{ form.pnf.label_tag }} {{ form.pnf }}
     </div>
     <div class="form-group">
-      {{ form.s_apellido }}
-    </div>
-
-    <div class="form-group">
-      {{ form.edad }}
+      {{ form.semestre.label_tag }} {{ form.semestre }}
     </div>
     <div class="form-group">
-      {{ form.cedula }}
-    </div>
-
-    <div class="form-group">
-      {{ form.correo }}
+      {{ form.seccion.label_tag }} {{ form.seccion }}
     </div>
     <div class="form-group">
-      {{ form.pnf.label_tag }}
-      {{ form.pnf }}
+      {{ form.turno.label_tag }} {{ form.turno }}
+    </div>
+    <div class="form-group">
+      {{ form.periodo_academico.label_tag }} {{ form.periodo_academico }}
+    </div>
+    <div class="form-group">
+      {{ form.tipo_estudiante.label_tag }} {{ form.tipo_estudiante }}
     </div>
 
-    <div class="form-group">
-      {{ form.semestre.label_tag }}
-      {{ form.semestre }}
-    </div>
-    <div class="form-group">
-      {{ form.seccion.label_tag }}
-      {{ form.seccion }}
-    </div>
-
-    <div class="form-group">
-      {{ form.turno.label_tag }}
-      {{ form.turno }}
-    </div>
-    <div class="form-group">
-      {{ form.periodo_academico.label_tag }}
-      {{ form.periodo_academico }}
-    </div>
-    <div class="form-group">
-      {{ form.tipo_estudiante.label_tag}}
-      {{ form.tipo_estudiante }}
-    </div>
-    
-    <!-- Campos para subir archivos -->
-    <div class="form-group">
-      <h3>Documentos:</h3>
+    <!-- Documentos -->
+    <fieldset>
+      <legend>Subida de Documentos</legend>
       {{ document_formset.management_form }}
+
       {% for form in document_formset %}
         <div class="document-group">
-          {{ form.archivos.label_tag }}
-          {{ form.archivos }}
+          {{ form.as_p }}
         </div>
       {% endfor %}
-    </div>
+    </fieldset>
 
-    <!-- Agrega el resto de los campos aquí de forma similar -->
-    <div class="buttom">
-      <input type="submit" value="REGISTRAR">
+    <!-- Botón de envío -->
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Registrarse</button>
     </div>
-    </form>
+  </form>
 </div>
 
 
