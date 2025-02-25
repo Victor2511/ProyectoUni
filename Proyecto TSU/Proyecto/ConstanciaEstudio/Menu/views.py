@@ -1,7 +1,8 @@
 from django.forms import inlineformset_factory
+from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from Menu.forms import RegisterForm
+from Menu.forms import RegisterForm, DocumentForm
 from .models import student_registration, Documentos
 from .forms import RecuperacionUsuarioForm
 from .forms import RecuperarPasswordForm
@@ -13,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django_q.tasks import async_task
 import os
 import zipfile
+import io
 from django.http import HttpResponse
 from django.conf import settings
 
@@ -23,27 +25,29 @@ def index(request):
         'title': 'Inicio'
     })
 
-# Crear el formset
+
+# Crear el formset para los documentos con los campos correctos
 DocumentosFormSet = inlineformset_factory(
-    student_registration,  # Modelo principal
-    Documentos,  # Modelo relacionado
-    fields=('archivos',),  # Campos que quieres mostrar
-    extra=4,  # Número de formularios vacíos adicionales
+    student_registration,
+    Documentos,
+    form=DocumentForm,
+    fields=('tipo_documento', 'archivo',),
+    extra=4,  # Permite hasta 4 documentos adicionales
+    can_delete=False
 )
 
 def register_student(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        document_formset = DocumentosFormSet(request.POST, request.FILES)  # Inicializar el formset para manejar errores
+        form = RegisterForm(request.POST, request.FILES)
 
         if form.is_valid():
-            # Guardar el estudiante principal
-            student = form.save()
-            
-            # Asignar el estudiante al formset y validar
+            student = form.save()  # Guardar primero el estudiante
+
+            # Crear el formset con la instancia del estudiante
             document_formset = DocumentosFormSet(request.POST, request.FILES, instance=student)
+
             if document_formset.is_valid():
-                document_formset.save()
+                document_formset.save()  # Guardar los documentos
                 messages.success(request, 'Te has registrado correctamente.')
                 return redirect('inicio')
             else:
@@ -52,31 +56,37 @@ def register_student(request):
             messages.error(request, 'Hubo un error en el formulario.')
     else:
         form = RegisterForm()
-        document_formset = DocumentosFormSet()  # Formset vacío para solicitudes GET
-    
+        document_formset = DocumentosFormSet()
+
     return render(request, 'users/register.html', {
         'title': 'Registro de Estudiante',
         'form': form,
-        'document_formset': document_formset,  # Asegúrate de incluir el formset en el contexto
+        'document_formset': document_formset,
     })
 
 def descargar_documentos(request, student_id):
-    student = student_registration.objects.get(pk=student_id)
-    documentos = student.documentos.all()  # Obtener documentos relacionados
+    student = get_object_or_404(student_registration, pk=student_id)
+    documentos = Documentos.objects.filter(estudiante=student)
 
-    # Crear un archivo ZIP en memoria
+    if not documentos.exists():
+        messages.error(request, "Este estudiante no tiene documentos para descargar.")
+        return redirect('alguna_vista')
+
     zip_filename = f"documentos_estudiante_{student_id}.zip"
-    zip_path = os.path.join(settings.MEDIA_ROOT, zip_filename)
-    with zipfile.ZipFile(zip_path, 'w') as zip_file:
+
+    # Crear ZIP en memoria en lugar de escribirlo en disco
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         for documento in documentos:
-            file_path = documento.archivos.path
+            file_path = documento.archivo.path
             zip_file.write(file_path, os.path.basename(file_path))
 
-    # Responder con el ZIP para su descarga
-    response = HttpResponse(open(zip_path, 'rb'), content_type='application/zip')
+    zip_buffer.seek(0)
+
+    response = HttpResponse(zip_buffer.read(), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={zip_filename}'
-    os.remove(zip_path)  # Eliminar el archivo ZIP después de enviarlo
     return response
+
 
 #Funcion del login
 def login_page(request):
