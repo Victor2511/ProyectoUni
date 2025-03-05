@@ -101,3 +101,15 @@ def generate_and_send_carnet_sync(estudiante_id):
         return "Error: El estudiante no existe."
     except Exception as e:
         return f"Error en la generación/envío del carnet: {e}"
+
+def send_email_task(subject, message, recipient_list):
+    """
+    Tarea asíncrona para enviar correos electrónicos.
+    """
+    send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,  # Usa el email configurado en settings.py
+        recipient_list,
+        fail_silently=False,
+    )
