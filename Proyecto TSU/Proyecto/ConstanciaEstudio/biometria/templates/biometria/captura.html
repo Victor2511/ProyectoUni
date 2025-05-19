@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tomar Foto</title>
+</head>
+<body>
+    <h2>Captura tu foto tipo carnet</h2>
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <button onclick="capturar()">Capturar</button>
+    <form method="POST" enctype="multipart/form-data" action="{% url 'procesar_foto' %}">
+        {% csrf_token %}
+        <input type="hidden" name="imagen" id="imagen">
+        <button type="submit">Subir foto procesada</button>
+    </form>
+
+    <script>
+        const video = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            });
+
+        function capturar() {
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 320, 240);
+            const dataURL = canvas.toDataURL('image/jpeg');
+            document.getElementById('imagen').value = dataURL;
+        }
+    </script>
+</body>
+</html>
