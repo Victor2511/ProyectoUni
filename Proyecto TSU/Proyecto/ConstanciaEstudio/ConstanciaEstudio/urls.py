@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Menu.urls')),
     path('solicitud/', include('solicitud.urls')),
+    path('biometria/', include('biometria.urls')),
 ]
 
 #Ruta imagenes
