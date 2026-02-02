@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'preventconcurrentlogins',
     'django_q',
+    'biometria',
 ]
 
 MIDDLEWARE = [
@@ -232,3 +233,4 @@ JAZZMIN_UI_TWEAKS = {
     "button_success": "outline",
     "button_info": "outline"
 }
+
