@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%} {% endblock %}</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/register.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/visual.css' %}">
+   <style>
+        #video, #canvas {
+            display: none;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+
+        #video {
+            width: 320px;
+            height: 240px;
+        }
+
+        #canvas {
+            width: 320px;
+            height: 240px;
+            background-color: #f0f0f0;
+        }
+
+        .photo-controls {
+            margin-top: 10px;
+        }
+
+        #foto-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <ul class="sidebar">
+        <li class="button-close" onclick="hideSidebar()">
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#000000">
+                    <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+                </svg>
+            </a>
+        </li>
+        <li><a href="{% url 'index' %}" class="sub-item">Inicio</a></li>
+        <li><a href="{% url 'login' %}" class="sub-item">Iniciar Sesion</a></li>
+    </ul>
+    <ul>
+        <a href="{% url 'index' %}">
+            <img src="{% static 'css/images/logo_unexca_white.png' %}" class="logo">
+        </a>
+        <li class="hidemobile"><a href="{% url 'index' %}" class="pri">Inicio</a></li>
+        <li class="hidemobile"><a href="{% url 'login' %}" class="pri">Iniciar Sesion</a></li>
+        <li class="button-menu" onclick="showSidebar()">
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
+                    <path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/>
+                </svg>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container">
+    <div class="title">Registrarse</div>
+    <form method="post" enctype="multipart/form-data" id="form-validation" novalidate>
+        {% csrf_token %}
+
+        <!-- Información del estudiante -->
+        <div class="form-group">{{ form.p_nombre.label_tag }} {{ form.p_nombre }}</div>
+        <div class="form-group">{{ form.s_nombre.label_tag }} {{ form.s_nombre }}</div>
+        <div class="form-group">{{ form.p_apellido.label_tag }} {{ form.p_apellido }}</div>
+        <div class="form-group">{{ form.s_apellido.label_tag }} {{ form.s_apellido }}</div>
+        <div class="form-group">{{ form.edad.label_tag }} {{ form.edad }}</div>
+        <div class="form-group">{{ form.cedula.label_tag }} {{ form.cedula }}</div>
+        <div class="form-group">{{ form.correo.label_tag }} {{ form.correo }}</div>
+
+        <!-- Información académica -->
+        <div class="form-group">{{ form.pnf.label_tag }} {{ form.pnf }}</div>
+        <div class="form-group">{{ form.semestre.label_tag }} {{ form.semestre }}</div>
+        <div class="form-group">{{ form.seccion.label_tag }} {{ form.seccion }}</div>
+        <div class="form-group">{{ form.turno.label_tag }} {{ form.turno }}</div>
+        <div class="form-group">{{ form.periodo_academico.label_tag }} {{ form.periodo_academico }}</div>
+        <div class="form-group">{{ form.tipo_estudiante.label_tag }} {{ form.tipo_estudiante }}</div>
+
+        <!-- Documentos -->
+        <fieldset>
+            <legend>Subida de Documentos</legend>
+            {{ document_formset.management_form }}
+            {% for form in document_formset %}
+                <div class="document-group">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        <!-- Captura de foto tipo carnet -->
+        <fieldset>
+            <legend>Foto tipo carnet</legend>
+            <div class="form-group">
+                <button type="button" onclick="abrirCamara()">Tomarse una foto</button>
+            </div>
+            <video id="video" autoplay></video>
+            <canvas id="canvas"></canvas>
+            <div class="photo-controls">
+                <button type="button" onclick="capturarFoto()">Capturar</button>
+                <button type="button" onclick="cerrarCamara()">Cancelar</button>
+            </div>
+            <img id="foto-preview" src="" alt="Vista previa de la foto" />
+            <input type="hidden" name="foto_carnet" id="foto_carnet_input">
+        </fieldset>
+
+        <!-- Botón de envío -->
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let video = null;
+    let stream = null;
+
+    function abrirCamara() {
+        video = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (mediaStream) {
+                stream = mediaStream;
+                video.srcObject = mediaStream;
+                video.style.display = 'block';
+                document.getElementById('canvas').style.display = 'none';
+            })
+            .catch(function (err) {
+                alert("No se pudo acceder a la cámara: " + err);
+            });
+    }
+
+    function capturarFoto() {
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const preview = document.getElementById('foto-preview');
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Fondo blanco
+        context.fillStyle = "#FFFFFF";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Dibuja la imagen del video
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const dataURL = canvas.toDataURL('image/jpeg');
+        preview.src = dataURL;
+        preview.style.display = 'block';
+
+        document.getElementById('foto_carnet_input').value = dataURL;
+        cerrarCamara();
+    }
+
+    function cerrarCamara() {
+        if (stream) {
+            let tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+        }
+        document.getElementById('video').style.display = 'none';
+    }
+
+    function showSidebar() {
+        document.querySelector('.sidebar').style.display = 'flex';
+    }
+
+    function hideSidebar() {
+        document.querySelector('.sidebar').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
